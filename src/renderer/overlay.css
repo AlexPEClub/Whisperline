@@ -1,0 +1,122 @@
+html,
+body {
+  margin: 0;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+  font: 12px/1 -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
+  user-select: none;
+}
+
+body {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pill {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 34px;
+  min-width: 56px;
+  padding: 0 14px;
+  border-radius: 17px;
+  background: rgba(18, 18, 20, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.28);
+  color: #fff;
+  opacity: 0;
+  transform: translateY(6px) scale(0.92);
+  transition:
+    opacity 140ms ease,
+    transform 160ms cubic-bezier(0.2, 0.9, 0.3, 1.2),
+    min-width 160ms ease;
+}
+
+.pill.visible {
+  opacity: 1;
+  transform: none;
+}
+
+.bars {
+  display: none;
+  align-items: center;
+  gap: 3px;
+  height: 20px;
+}
+
+.bars i {
+  display: block;
+  width: 3px;
+  height: 3px;
+  border-radius: 2px;
+  background: #fff;
+  transition: height 70ms linear;
+}
+
+.dots,
+.lock,
+.message {
+  display: none;
+}
+
+.dots {
+  gap: 5px;
+}
+
+.dots i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #fff;
+  animation: pulse 900ms infinite ease-in-out;
+}
+
+.dots i:nth-child(2) {
+  animation-delay: 150ms;
+}
+
+.dots i:nth-child(3) {
+  animation-delay: 300ms;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.lock {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  background: #ff5a4f;
+}
+
+.pill.recording .bars,
+.pill.processing .dots,
+.pill.handsfree .lock {
+  display: flex;
+}
+
+.pill.handsfree .lock {
+  display: block;
+}
+
+.pill.error {
+  background: rgba(120, 24, 20, 0.95);
+}
+
+.pill.error .message {
+  display: block;
+  white-space: nowrap;
+  font-weight: 500;
+}

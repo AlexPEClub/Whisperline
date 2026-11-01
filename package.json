@@ -1,0 +1,42 @@
+{
+  "name": "whisperline",
+  "productName": "Whisperline",
+  "version": "0.1.0",
+  "description": "Voice dictation for macOS: hold a key, speak, get clean text pasted into any app.",
+  "main": "src/main/main.js",
+  "private": true,
+  "license": "MIT",
+  "scripts": {
+    "build:helper": "node scripts/build-helper.js",
+    "postinstall": "node scripts/build-helper.js",
+    "start": "env -u ELECTRON_RUN_AS_NODE electron .",
+    "test": "node --test",
+    "dist": "npm run build:helper && electron-builder --mac dmg",
+    "pack": "npm run build:helper && electron-builder --mac --dir"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
+    "openai": "^7.32.0"
+  },
+  "devDependencies": {
+    "electron": "^44.7.0",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "dev.flowclone.app",
+    "productName": "Whisperline",
+    "files": ["src/**/*", "assets/**/*", "package.json"],
+    "afterPack": "scripts/after-pack.js",
+    "extraResources": [{ "from": "build/flow-helper", "to": "flow-helper" }],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "identity": null,
+      "hardenedRuntime": false,
+      "target": ["dmg"],
+      "extendInfo": {
+        "NSMicrophoneUsageDescription": "Whisperline braucht das Mikrofon, um deine Sprache zu transkribieren.",
+        "LSUIElement": true
+      }
+    }
+  }
+}

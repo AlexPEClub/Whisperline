@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self'; script-src 'self'" />
+    <title>Whisperline</title>
+    <link rel="stylesheet" href="hub.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand"><span class="mark"></span>Whisperline</div>
+      <nav>
+        <button data-view="home" class="active">Startseite</button>
+        <button data-view="dictionary">Wörterbuch</button>
+        <button data-view="settings">Einstellungen</button>
+      </nav>
+      <button id="toggle-dictation" class="ghost">Freihand-Diktat</button>
+    </aside>
+
+    <main>
+      <div id="permissions" class="banner" hidden></div>
+
+      <section id="view-home" class="view">
+        <header>
+          <h1>Willkommen zurück</h1>
+          <p class="sub" id="hint"></p>
+        </header>
+        <div class="stats">
+          <div class="stat"><span id="stat-words">0</span><label>Wörter diktiert</label></div>
+          <div class="stat"><span id="stat-dictations">0</span><label>Diktate</label></div>
+          <div class="stat"><span id="stat-wpm">0</span><label>Wörter / Minute</label></div>
+          <div class="stat" title="Geschätzt nach Listenpreisen von OpenAI und Anthropic">
+            <span id="stat-cost-month">0 $</span><label>Kosten diesen Monat<br /><span id="stat-cost-total">0 $</span> gesamt</label>
+          </div>
+        </div>
+        <section class="activity" aria-labelledby="activity-title">
+          <div class="toolbar">
+            <h2 id="activity-title">Aktivität</h2>
+            <span class="sub" id="activity-total"></span>
+          </div>
+          <div class="activity-panel">
+            <div id="activity-grid" class="activity-grid" role="img"></div>
+            <div class="activity-legend" aria-hidden="true">
+              Weniger <i data-level="0"></i><i data-level="1"></i><i data-level="2"></i><i data-level="3"></i><i data-level="4"></i> Mehr
+            </div>
+          </div>
+          <div id="activity-tooltip" class="activity-tooltip" hidden></div>
+        </section>
+        <div class="toolbar">
+          <h2>Verlauf</h2>
+          <input id="search" type="search" placeholder="Suchen…" />
+        </div>
+        <div id="history" class="history"></div>
+      </section>
+
+      <section id="view-dictionary" class="view" hidden>
+        <header>
+          <h1>Wörterbuch</h1>
+          <p class="sub">Namen und Fachbegriffe, die richtig geschrieben werden sollen. Optional mit Ersetzung: „meine Mail“ → „info@…“.</p>
+        </header>
+        <form id="dict-form" class="dict-form">
+          <input id="dict-phrase" placeholder="Wort oder Phrase" required />
+          <input id="dict-replacement" placeholder="Ersetzen durch (optional)" />
+          <button type="submit">Hinzufügen</button>
+        </form>
+        <div id="dictionary" class="dict-list"></div>
+      </section>
+
+      <section id="view-settings" class="view" hidden>
+        <header><h1>Einstellungen</h1></header>
+        <form id="settings" class="settings">
+          <fieldset>
+            <legend>Diktat</legend>
+            <label>Taste
+              <select name="triggerKey">
+                <option value="fn">Fn / Globus</option>
+                <option value="leftOption">Linke Wahltaste ⌥</option>
+                <option value="rightOption">Rechte Wahltaste ⌥</option>
+                <option value="rightCommand">Rechte Befehlstaste ⌘</option>
+                <option value="rightControl">Rechte Ctrl-Taste ⌃</option>
+              </select>
+            </label>
+            <label>Mikrofon
+              <select name="micDeviceId" id="mics"><option value="">Systemstandard</option></select>
+            </label>
+            <label>Sprache
+              <select name="language">
+                <option value="">Automatisch</option>
+                <option value="de">Deutsch</option>
+                <option value="en">Englisch</option>
+                <option value="fr">Französisch</option>
+                <option value="es">Spanisch</option>
+                <option value="it">Italienisch</option>
+              </select>
+            </label>
+            <label class="check"><input type="checkbox" name="sounds" /> Töne beim Start/Stopp</label>
+            <label class="check"><input type="checkbox" name="restoreClipboard" /> Zwischenablage nach dem Einfügen wiederherstellen</label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Text-Bereinigung (Claude)</legend>
+            <label class="check"><input type="checkbox" name="cleanupEnabled" /> Füllwörter entfernen, Satzzeichen und Formatierung korrigieren</label>
+            <label>Stil
+              <select name="style">
+                <option value="formal">Formell</option>
+                <option value="casual">Locker</option>
+                <option value="very-casual">Sehr locker</option>
+              </select>
+            </label>
+            <label>Modell
+              <select name="cleanupModel">
+                <option value="claude-opus-5-5">Claude Opus 5.5 (beste Qualität)</option>
+                <option value="claude-sonnet-5-5">Claude Sonnet 5.5</option>
+                <option value="claude-haiku-5-5">Claude Haiku 5.5 (am schnellsten)</option>
+              </select>
+            </label>
+            <label>Anthropic API-Key <input name="anthropicKey" type="password" placeholder="sk-ant-…" autocomplete="off" /></label>
+          </fieldset>
+
+          <fieldset>
+            <legend>Transkription (OpenAI)</legend>
+            <label>Modell
+              <select name="transcriptionModel">
+                <option value="gpt-transcribe">gpt-transcribe</option>
+                <option value="gpt-4o-transcribe">gpt-4o-transcribe</option>
+                <option value="gpt-4o-mini-transcribe">gpt-4o-mini-transcribe</option>
+                <option value="whisper-1">whisper-1</option>
+              </select>
+            </label>
+            <label>OpenAI API-Key <input name="openaiKey" type="password" placeholder="sk-…" autocomplete="off" /></label>
+          </fieldset>
+          <p class="saved" id="saved" hidden>Gespeichert</p>
+        </form>
+      </section>
+    </main>
+    <script src="hub.js"></script>
+  </body>
+</html>
